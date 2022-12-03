@@ -45,7 +45,7 @@
 ## About The Project
 
 
-This service is built with the intention to be as basic as possible. This means that this service provides an gRPC endpoint, which other services can call. This service WILL not handle any other logic (authentication, users, ...).
+This service is built with the intention to be as basic as possible. This means that this service provides an HTTP endpoint, which other services can call. This service WILL not handle any other logic (authentication, users, ...).
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
