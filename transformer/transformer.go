@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"gocv.io/x/gocv"
 	"image"
+	"image/draw"
+	"image/png"
 	requestbody "marketron-image-engine/api/request-body"
-	"path/filepath"
+	"os"
 )
 
 type Transformer struct {
@@ -18,13 +20,13 @@ type Transformer struct {
 func (t *Transformer) Create() error {
 	// read image
 	fmt.Println(t.MappedCoordinates)
-	screenshot, err := gocv.IMDecode(t.WebsiteImage, gocv.IMReadColor)
+	screenshot, err := gocv.IMDecode(t.WebsiteImage, gocv.IMReadUnchanged)
 	if screenshot.Empty() || err != nil {
 		fmt.Printf("Failed to decode screenshot image")
 		return err
 	}
 
-	template, err := gocv.IMDecode(t.TemplateImage, gocv.IMReadColor)
+	template, err := gocv.IMDecode(t.TemplateImage, gocv.IMReadUnchanged)
 	if screenshot.Empty() || err != nil {
 		fmt.Printf("Failed to decode template image")
 		return err
@@ -60,11 +62,24 @@ func (t *Transformer) Create() error {
 	width := templateSize[1]
 	gocv.WarpPerspective(screenshot, &perspective, transform, image.Point{X: width, Y: height})
 
-	outPath := filepath.Join("card_perspective.jpg")
-	if ok := gocv.IMWrite(outPath, perspective); !ok {
-		fmt.Printf("Failed to write image")
-		return err
+	screenshotImage, _ := perspective.ToImage()
+	templateImage, _ := template.ToImage()
+	r := image.Rectangle{Min: image.Point{}, Max: image.Point{X: width, Y: height}}
+	rgba := image.NewRGBA(r)
+	draw.Draw(rgba, screenshotImage.Bounds(), screenshotImage, image.Point{}, draw.Over)
+	draw.Draw(rgba, templateImage.Bounds(), templateImage, image.Point{}, draw.Over)
+
+	out, err := os.Create("./output.png")
+	if err != nil {
+		fmt.Println(err)
 	}
+	png.Encode(out, rgba)
+
+	out, err = os.Create("./template.png")
+	if err != nil {
+		fmt.Println(err)
+	}
+	png.Encode(out, templateImage)
 
 	return nil
 }
