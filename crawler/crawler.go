@@ -26,7 +26,7 @@ func (c *Crawler) GetScreenshot() (error, []byte) {
 	if err := chromedp.Run(ctx,
 		chromedp.EmulateViewport(c.ViewportWidth, c.ViewportHeight),
 		chromedp.Navigate(c.URL),
-		chromedp.FullScreenshot(&buf, 90),
+		chromedp.CaptureScreenshot(&buf),
 	); err != nil {
 		log.Println(err)
 		return err, nil

@@ -6,7 +6,7 @@ import (
 	requestbody "marketron-image-engine/api/request-body"
 	"marketron-image-engine/crawler"
 	"marketron-image-engine/helpers"
-	"os"
+	"marketron-image-engine/transformer"
 )
 
 func GetImage(ctx *fiber.Ctx) error {
@@ -32,8 +32,8 @@ func GetImage(ctx *fiber.Ctx) error {
 		return ctx.SendStatus(500)
 	}
 
-	err = os.WriteFile("tmp/"+fileName+"-temp.png", templateImage, 0644)
-	err = os.WriteFile("tmp/"+fileName+".png", screenshotImage, 0644)
+	trans := transformer.Transformer{WebsiteImage: screenshotImage, TemplateImage: templateImage, MappedCoordinates: body.Coordinates, FileName: fileName}
+	trans.Create()
 
 	return ctx.SendString("success")
 }

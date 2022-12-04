@@ -5,6 +5,8 @@ go 1.19
 require (
 	github.com/chromedp/chromedp v0.8.6
 	github.com/gofiber/fiber/v2 v2.40.1
+	github.com/google/uuid v1.3.0
+	gocv.io/x/gocv v0.31.0
 )
 
 require (
@@ -14,7 +16,6 @@ require (
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.1.0 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.15.9 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
