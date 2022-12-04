@@ -2,19 +2,16 @@ package main
 
 import "C"
 import (
-	"fmt"
-	"marketron-image-engine/crawler"
-	"time"
+	"github.com/gofiber/fiber/v2"
+	"marketron-image-engine/api/controllers"
 )
 
 func main() {
-	start := time.Now()
-	fmt.Println("Start")
+	app := fiber.New(fiber.Config{AppName: "Marketron Image Engine"})
 
-	seleniumCrawler := crawler.Crawler{URL: "https://www.higroup.si"}
-	seleniumCrawler.GetScreenshot()
+	app.Get("/image", controllers.GetImage)
 
-	fmt.Println("End: " + time.Since(start).String())
+	app.Listen(":3000")
 
 	//cardPath := filepath.Join("1.png")
 	//// read image

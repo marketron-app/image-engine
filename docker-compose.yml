@@ -4,6 +4,8 @@ services:
         # platform: linux/amd64
         stdin_open: true # docker run -i
         tty: true        # docker run -t
+        ports:
+            - "81:3000"
         build:
             dockerfile: Dockerfile
             context: .
