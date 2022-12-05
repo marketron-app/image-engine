@@ -6,7 +6,7 @@ type TemplateCoordinate struct {
 }
 
 type GetImageBody struct {
-	URL            string               `json:"url" form:"url"`
+	URL            string               `json:"url" form:"url" validate:"required"`
 	TemplateImage  string               `json:"templateImage" form:"templateImage"`
 	Coordinates    []TemplateCoordinate `json:"coordinates"`
 	ViewportWidth  int64                `json:"viewportWidth"`

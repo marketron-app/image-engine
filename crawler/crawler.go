@@ -2,7 +2,6 @@ package crawler
 
 import (
 	"context"
-	"fmt"
 	"github.com/chromedp/chromedp"
 	"log"
 	"time"
@@ -15,10 +14,12 @@ type Crawler struct {
 }
 
 func (c *Crawler) GetScreenshot() (error, []byte) {
-	start := time.Now()
 	ctx, cancel := chromedp.NewContext(
 		context.Background(),
 	)
+	defer cancel()
+
+	ctx, cancel = context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	var buf []byte
@@ -32,6 +33,5 @@ func (c *Crawler) GetScreenshot() (error, []byte) {
 		return err, nil
 	}
 
-	fmt.Println("End: " + time.Since(start).String())
 	return nil, buf
 }
