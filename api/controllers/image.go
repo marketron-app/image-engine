@@ -13,8 +13,6 @@ import (
 	"time"
 )
 
-var validate = validator.New()
-
 func GetImage(ctx *fiber.Ctx) error {
 	ctx.Accepts("application/json")
 
@@ -59,7 +57,9 @@ func GetImage(ctx *fiber.Ctx) error {
 	uploaders.UploadToS3(fileName+".png", finalImage)
 	fmt.Println("Uploader time: " + time.Since(start).String())
 
-	return ctx.SendString("success")
+	return ctx.JSON(fiber.Map{
+		"filename": fileName + ".png",
+	})
 }
 
 type ErrorResponse struct {
@@ -70,6 +70,7 @@ type ErrorResponse struct {
 
 func ValidateStruct(imageBody requestbody.GetImageBody) []*ErrorResponse {
 	var errors []*ErrorResponse
+	var validate = validator.New()
 	err := validate.Struct(imageBody)
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
@@ -80,5 +81,6 @@ func ValidateStruct(imageBody requestbody.GetImageBody) []*ErrorResponse {
 			errors = append(errors, &element)
 		}
 	}
+
 	return errors
 }
