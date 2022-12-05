@@ -7,6 +7,7 @@ import (
 	"marketron-image-engine/crawler"
 	"marketron-image-engine/helpers"
 	"marketron-image-engine/transformer"
+	"marketron-image-engine/uploaders"
 )
 
 func GetImage(ctx *fiber.Ctx) error {
@@ -33,7 +34,12 @@ func GetImage(ctx *fiber.Ctx) error {
 	}
 
 	trans := transformer.Transformer{WebsiteImage: screenshotImage, TemplateImage: templateImage, MappedCoordinates: body.Coordinates, FileName: fileName}
-	trans.Create()
+	err, finalImage := trans.Create()
+	if err != nil {
+		return err
+	}
+
+	uploaders.UploadToS3(fileName+".png", finalImage)
 
 	return ctx.SendString("success")
 }

@@ -1,13 +1,13 @@
 package transformer
 
 import (
+	"bytes"
 	"fmt"
 	"gocv.io/x/gocv"
 	"image"
 	"image/draw"
 	"image/png"
 	requestbody "marketron-image-engine/api/request-body"
-	"os"
 )
 
 type Transformer struct {
@@ -17,19 +17,18 @@ type Transformer struct {
 	FileName          string
 }
 
-func (t *Transformer) Create() error {
+func (t *Transformer) Create() (error, []byte) {
 	// read image
-	fmt.Println(t.MappedCoordinates)
 	screenshot, err := gocv.IMDecode(t.WebsiteImage, gocv.IMReadUnchanged)
 	if screenshot.Empty() || err != nil {
 		fmt.Printf("Failed to decode screenshot image")
-		return err
+		return err, nil
 	}
 
 	template, err := gocv.IMDecode(t.TemplateImage, gocv.IMReadUnchanged)
 	if screenshot.Empty() || err != nil {
 		fmt.Printf("Failed to decode template image")
-		return err
+		return err, nil
 	}
 
 	// 0 ... height
@@ -46,7 +45,6 @@ func (t *Transformer) Create() error {
 
 	origImg := gocv.NewPointVectorFromPoints(points)
 
-	fmt.Println(t.MappedCoordinates)
 	points = []image.Point{
 		{t.MappedCoordinates[0].X, t.MappedCoordinates[0].Y},
 		{t.MappedCoordinates[1].X, t.MappedCoordinates[1].Y},
@@ -69,17 +67,10 @@ func (t *Transformer) Create() error {
 	draw.Draw(rgba, screenshotImage.Bounds(), screenshotImage, image.Point{}, draw.Over)
 	draw.Draw(rgba, templateImage.Bounds(), templateImage, image.Point{}, draw.Over)
 
-	out, err := os.Create("./output.png")
+	buf := new(bytes.Buffer)
+	err = png.Encode(buf, rgba)
 	if err != nil {
-		fmt.Println(err)
+		return err, nil
 	}
-	png.Encode(out, rgba)
-
-	out, err = os.Create("./template.png")
-	if err != nil {
-		fmt.Println(err)
-	}
-	png.Encode(out, templateImage)
-
-	return nil
+	return nil, buf.Bytes()
 }

@@ -55,6 +55,3 @@ RUN chmod +x /usr/bin/chromedriver
 COPY . .
 RUN go mod download
 RUN go build -o main main.go
-
-# chromium --headless --no-sandbox  --screenshot --window-size=1280,1696 https://www.how2shout.com/
-
