@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"log"
 	"marketron-image-engine/api/controllers"
 	"marketron-image-engine/env"
@@ -16,6 +17,7 @@ func init() {
 
 func main() {
 	app := fiber.New(fiber.Config{AppName: "Marketron Image Engine"})
+	app.Use(recover.New())
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)

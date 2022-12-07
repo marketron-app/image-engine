@@ -1,10 +1,19 @@
-FROM golang:1.18
+FROM alpine as chromedriver
+RUN wget https://chromedriver.storage.googleapis.com/108.0.5359.71/chromedriver_linux64.zip
+RUN unzip chromedriver_linux64.zip
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+FROM golang:1.18 as step1
+WORKDIR /usr/app
+
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+RUN sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+RUN apt --fix-broken install
+
+RUN apt-get update && apt-get install -y --no-install-recommends gnupg \
             git build-essential cmake pkg-config unzip libgtk2.0-dev \
             curl ca-certificates libcurl4-openssl-dev libssl-dev \
             libavcodec-dev libavformat-dev libswscale-dev libtbb2 libtbb-dev \
-            libjpeg-dev libpng-dev libtiff-dev libdc1394-22-dev && \
+            libjpeg-dev libpng-dev libtiff-dev libdc1394-22-dev chromium && \
             rm -rf /var/lib/apt/lists/*
 
 ARG OPENCV_VERSION="4.6.0"
@@ -39,15 +48,7 @@ RUN curl -Lo opencv.zip https://github.com/opencv/opencv/archive/${OPENCV_VERSIO
             make preinstall && make install && ldconfig && \
             cd / && rm -rf opencv*
 
-WORKDIR /usr/app
-RUN apt-get update && apt-get install -y gnupg
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-RUN sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-RUN apt --fix-broken install
-RUN apt-get update && apt-get install chromium -y
-
-RUN wget https://chromedriver.storage.googleapis.com/108.0.5359.71/chromedriver_linux64.zip
-RUN unzip chromedriver_linux64.zip
+COPY --from=chromedriver chromedriver .
 RUN mv chromedriver /usr/bin/chromedriver
 RUN chown root:root /usr/bin/chromedriver
 RUN chmod +x /usr/bin/chromedriver
@@ -55,3 +56,6 @@ RUN chmod +x /usr/bin/chromedriver
 COPY . .
 RUN go mod download
 RUN go build -o main main.go
+
+FROM step1
+CMD ["./main"]
