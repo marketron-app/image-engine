@@ -28,8 +28,12 @@ jobs:
                     TAG=${{  github.ref_name }}
                     echo "TAG=$TAG" >> "$GITHUB_ENV"
             -
+                name: Set up Docker Buildx
+                uses: docker/setup-buildx-action@v2
+            -
                 name: Build and push
                 uses: docker/build-push-action@v3
                 with:
                     push: true
                     tags: tavsec/marketron-image-engine:${{ env.TAG }}
+                    platforms: linux/amd64,linux/arm64
