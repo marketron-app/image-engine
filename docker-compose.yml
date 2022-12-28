@@ -11,3 +11,4 @@ services:
             context: .
         volumes:
             - .:/usr/app
+        entrypoint: sh

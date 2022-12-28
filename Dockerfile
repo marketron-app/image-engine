@@ -57,5 +57,5 @@ COPY . .
 RUN go mod download
 RUN go build -o main main.go
 
-FROM step1
+EXPOSE 3000
 CMD ["./main"]

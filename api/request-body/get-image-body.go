@@ -11,4 +11,5 @@ type GetImageBody struct {
 	Coordinates    []TemplateCoordinate `json:"coordinates" validate:"required,len=4"`
 	ViewportWidth  int64                `json:"viewportWidth" validate:"required"`
 	ViewportHeight int64                `json:"viewportHeight" validate:"required"`
+	FileName       string               `json:"fileName"`
 }
