@@ -29,7 +29,9 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-
+  <a href="https://github.com/marketron-app/app">
+    <img src="media/marketron-cropped.png" alt="Logo" height="50">
+  </a>
 <h3 align="center">Marketron Image Engine</h3>
 
   <p align="center">
