@@ -16,6 +16,7 @@
 
 # Images
 *.png
+!media/marketron-cropped.png
 
 .env
 tmp/
