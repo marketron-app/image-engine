@@ -35,7 +35,9 @@
 <h3 align="center">Marketron Image Engine</h3>
 
   <p align="center">
-    Marketron Image Engine is a service, used in <a href="https://marketron.app">Marketron application</a>. It's main purpose is to generate screenshot of the given URL, transform it to fit into template, and paste it into given template.
+    <strong>[WIP] Project is still in early stages of development. Breaking changes may happen at every commit.</strong>
+    
+Marketron Image Engine is a service, used in <a href="https://marketron.app">Marketron application</a>. It's main purpose is to generate screenshot of the given URL, transform it to fit into template, and paste it into given template.
     <br />
     
   </p>
