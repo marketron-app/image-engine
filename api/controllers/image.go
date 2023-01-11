@@ -10,7 +10,6 @@ import (
     "marketron-image-engine/helpers"
     "marketron-image-engine/transformer"
     "marketron-image-engine/uploaders"
-    "os"
     "time"
 )
 
@@ -44,7 +43,6 @@ func GetImage(ctx *fiber.Ctx) error {
     start := time.Now()
     seleniumCrawler := crawler.Crawler{URL: body.URL, ViewportHeight: body.ViewportHeight, ViewportWidth: body.ViewportWidth}
     err, screenshotImage := seleniumCrawler.GetScreenshot()
-    os.WriteFile("test.png", screenshotImage, 0644)
     if err != nil {
         ctx.SendString(err.Error())
         return ctx.SendStatus(500)
