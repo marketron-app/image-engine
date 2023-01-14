@@ -29,6 +29,7 @@ func (c *Crawler) GetScreenshot() (error, []byte) {
 	if err := chromedp.Run(ctx,
 		chromedp.Emulate(c.generateDevice()),
 		chromedp.Navigate(c.URL),
+		chromedp.WaitReady("body"),
 		chromedp.CaptureScreenshot(&buf),
 	); err != nil {
 		log.Println(err)
