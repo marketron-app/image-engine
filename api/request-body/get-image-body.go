@@ -12,4 +12,5 @@ type GetImageBody struct {
 	ViewportWidth  int64                `json:"viewportWidth" validate:"required"`
 	ViewportHeight int64                `json:"viewportHeight" validate:"required"`
 	FileName       string               `json:"fileName"`
+	IsMobile       bool                 `json:"isMobile"`
 }
