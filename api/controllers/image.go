@@ -10,7 +10,15 @@ import (
 	"marketron-image-engine/helpers"
 	"marketron-image-engine/transformer"
 	"marketron-image-engine/uploaders"
+	"os"
+	"strings"
 	"time"
+)
+
+const (
+	crawlerTimeMetricHeaderName     = "X-MARKETRON-METRIC-CRAWLER"
+	transformerTimeMetricHeaderName = "X-MARKETRON-METRIC-TRANSFORMER"
+	uploaderTimeMetricHeaderName    = "X-MARKETRON-METRIC-UPLOADER"
 )
 
 func GetImage(ctx *fiber.Ctx) error {
@@ -47,7 +55,8 @@ func GetImage(ctx *fiber.Ctx) error {
 		ctx.SendString(err.Error())
 		return ctx.SendStatus(500)
 	}
-	fmt.Println("Crawler time: " + time.Since(start).String())
+	crawlerTime := time.Since(start).Milliseconds()
+	addMetricHeader(ctx, crawlerTimeMetricHeaderName, fmt.Sprintf("%d", crawlerTime))
 
 	start = time.Now()
 	trans := transformer.Transformer{WebsiteImage: screenshotImage, TemplateImage: templateImage, MappedCoordinates: body.Coordinates, FileName: fileName}
@@ -55,11 +64,13 @@ func GetImage(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("Transformer time: " + time.Since(start).String())
+	transformerTime := time.Since(start).Milliseconds()
+	addMetricHeader(ctx, transformerTimeMetricHeaderName, fmt.Sprintf("%d", transformerTime))
 
 	start = time.Now()
 	uploaders.UploadToS3(fileName+".png", finalImage)
-	fmt.Println("Uploader time: " + time.Since(start).String())
+	uploaderTime := time.Since(start).Milliseconds()
+	addMetricHeader(ctx, uploaderTimeMetricHeaderName, fmt.Sprintf("%d", uploaderTime))
 
 	return ctx.JSON(fiber.Map{
 		"filename": fileName + ".png",
@@ -87,4 +98,11 @@ func ValidateStruct(imageBody requestbody.GetImageBody) []*ErrorResponse {
 	}
 
 	return errors
+}
+
+func addMetricHeader(ctx *fiber.Ctx, headerName, headerValue string) {
+	var headersEnabled = os.Getenv("METRIC_HEADERS_ENABLED")
+	if strings.ToLower(headersEnabled) == "true" {
+		ctx.Append(headerName, headerValue)
+	}
 }
