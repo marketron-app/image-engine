@@ -5,13 +5,6 @@ import (
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/device"
 	"log"
-	"os"
-	"strconv"
-	"time"
-)
-
-const (
-	defaultCrawlerTimeout = 10
 )
 
 type Crawler struct {
@@ -21,18 +14,11 @@ type Crawler struct {
 	IsMobile       bool
 }
 
-func (c *Crawler) GetScreenshot() (error, []byte) {
+func (c *Crawler) GetScreenshot(timeoutCtx context.Context) (error, []byte) {
+
 	ctx, cancel := chromedp.NewContext(
-		context.Background(),
+		timeoutCtx,
 	)
-	defer cancel()
-
-	contextTimeoutSeconds, err := strconv.Atoi(os.Getenv("CRAWLER_TIMEOUT"))
-	if err != nil || contextTimeoutSeconds == 0 {
-		contextTimeoutSeconds = defaultCrawlerTimeout
-	}
-
-	ctx, cancel = context.WithTimeout(ctx, time.Duration(contextTimeoutSeconds)*time.Second)
 	defer cancel()
 
 	var buf []byte
