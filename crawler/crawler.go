@@ -5,7 +5,13 @@ import (
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/device"
 	"log"
+	"os"
+	"strconv"
 	"time"
+)
+
+var (
+	defaultCrawlerTimeout = 10
 )
 
 type Crawler struct {
@@ -21,7 +27,12 @@ func (c *Crawler) GetScreenshot() (error, []byte) {
 	)
 	defer cancel()
 
-	ctx, cancel = context.WithTimeout(ctx, 10*time.Second)
+	contextTimeoutSeconds, err := strconv.Atoi(os.Getenv("CRAWLER_TIMEOUT"))
+	if err != nil || contextTimeoutSeconds == 0 {
+		contextTimeoutSeconds = defaultCrawlerTimeout
+	}
+
+	ctx, cancel = context.WithTimeout(ctx, time.Duration(contextTimeoutSeconds)*time.Second)
 	defer cancel()
 
 	var buf []byte
