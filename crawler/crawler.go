@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-var (
+const (
 	defaultCrawlerTimeout = 10
 )
 
