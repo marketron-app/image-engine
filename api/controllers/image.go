@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -11,6 +12,7 @@ import (
 	"marketron-image-engine/transformer"
 	"marketron-image-engine/uploaders"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -19,6 +21,7 @@ const (
 	crawlerTimeMetricHeaderName     = "X-MARKETRON-METRIC-CRAWLER"
 	transformerTimeMetricHeaderName = "X-MARKETRON-METRIC-TRANSFORMER"
 	uploaderTimeMetricHeaderName    = "X-MARKETRON-METRIC-UPLOADER"
+	defaultCrawlerTimeout           = 10
 )
 
 func GetImage(ctx *fiber.Ctx) error {
@@ -50,7 +53,15 @@ func GetImage(ctx *fiber.Ctx) error {
 
 	start := time.Now()
 	seleniumCrawler := crawler.Crawler{URL: body.URL, ViewportHeight: body.ViewportHeight, ViewportWidth: body.ViewportWidth, IsMobile: body.IsMobile}
-	err, screenshotImage := seleniumCrawler.GetScreenshot()
+	contextTimeoutSeconds, err := strconv.Atoi(os.Getenv("CRAWLER_TIMEOUT"))
+	if err != nil || contextTimeoutSeconds == 0 {
+		contextTimeoutSeconds = defaultCrawlerTimeout
+	}
+
+	timeoutCtx, cancel := context.WithTimeout(context.Background(), time.Duration(contextTimeoutSeconds)*time.Second)
+	defer cancel()
+
+	err, screenshotImage := seleniumCrawler.GetScreenshot(timeoutCtx)
 	if err != nil {
 		ctx.SendString(err.Error())
 		return ctx.SendStatus(500)
