@@ -28,6 +28,8 @@ func main() {
 	}()
 
 	app.Get("/image", controllers.GetImage)
+	app.Get("/health", controllers.Health)
+	app.Get("/", controllers.Health)
 
 	if err := app.Listen(":3000"); err != nil {
 		log.Panic(err)
