@@ -6,6 +6,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 	requestbody "marketron-image-engine/api/request-body"
 	"marketron-image-engine/crawler"
 	"marketron-image-engine/helpers"
@@ -36,8 +37,12 @@ func GetImage(ctx *fiber.Ctx) error {
 	errors := ValidateStruct(*body)
 	if errors != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
-
 	}
+
+	contextLogger := log.WithFields(log.Fields{
+		"url":           body.URL,
+		"templateImage": body.TemplateImage,
+	})
 
 	fileName := body.FileName
 
@@ -47,6 +52,7 @@ func GetImage(ctx *fiber.Ctx) error {
 
 	err, templateImage := helpers.DownloadFromUrl(body.TemplateImage)
 	if err != nil {
+		contextLogger.Error("Error downloading template: " + err.Error())
 		ctx.SendString(err.Error())
 		return ctx.SendStatus(500)
 	}
@@ -63,6 +69,7 @@ func GetImage(ctx *fiber.Ctx) error {
 
 	err, screenshotImage := seleniumCrawler.GetScreenshot(timeoutCtx)
 	if err != nil {
+		contextLogger.Error("Error getting screenshot: " + err.Error())
 		ctx.SendString(err.Error())
 		return ctx.SendStatus(500)
 	}
@@ -73,13 +80,17 @@ func GetImage(ctx *fiber.Ctx) error {
 	trans := transformer.Transformer{WebsiteImage: screenshotImage, TemplateImage: templateImage, MappedCoordinates: body.Coordinates, FileName: fileName}
 	err, finalImage := trans.Create()
 	if err != nil {
+		contextLogger.Error("Error transforming image: " + err.Error())
 		return err
 	}
 	transformerTime := time.Since(start).Milliseconds()
 	addMetricHeader(ctx, transformerTimeMetricHeaderName, fmt.Sprintf("%d", transformerTime))
 
 	start = time.Now()
-	uploaders.UploadToS3(fileName+".png", finalImage)
+	err = uploaders.UploadToS3(fileName+".png", finalImage)
+	if err != nil {
+		log.Error("Error uploading to S3: " + err.Error())
+	}
 	uploaderTime := time.Since(start).Milliseconds()
 	addMetricHeader(ctx, uploaderTimeMetricHeaderName, fmt.Sprintf("%d", uploaderTime))
 
