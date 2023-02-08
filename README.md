@@ -71,7 +71,7 @@ The best way to set up the project is by using Docker. Run the following command
 Application consists of one main endpoint, and one healthcheck endpoint.
 
 ### Generate image
-To generate new image, use `GET /images` request, like so:
+To generate new image, use `GET /image` request, like so:
 ```bash
 curl --location -g --request GET \
    'http://localhost:3000/image? \
