@@ -104,7 +104,7 @@ Endpoint will return filename of the generated image, which is uploaded to the S
 You can use `GET /` or `GET /health` to use as a healthcheck.
 
 ### Metrics headers
-If you set the `METRIC_HEADERS_ENABLED` to `true`, the `/images` endpoint will pass the following response headers:
+If you set the `METRIC_HEADERS_ENABLED` to `true`, the `/image` endpoint will pass the following response headers:
 
 | Header                         | Description                                                        |
 |--------------------------------|--------------------------------------------------------------------|
