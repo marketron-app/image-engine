@@ -92,8 +92,8 @@ curl --location -g --request GET \
 
 #### Parameters
 **`url`**: URL of the website, for which you want to generate the mockup.  
-**`templateImage`**: Cutout image, on which the screenshot of the website will be pasted on. Must have transparent cutout, in PNG format.
-**`coordinates`**: Array of coordinates (in pixels), where the cutout is on the templateImage. Must be in the following order: top-left, bottom-left, bottom-right, top-right.  
+**`templateImage`**: Cutout image, on which the screenshot of the website will be pasted on. Must have transparent cutout, in PNG format.  
+**`coordinates`**: Array of coordinates (in pixels), where the cutout is on the templateImage. Must be in the following order: top-left, bottom-left, bottom-right, top-right.    
 **`viewportWidth`**: Width of the screenshot.  
 **`viewportHeight`**: Height of the screenshot.
 
