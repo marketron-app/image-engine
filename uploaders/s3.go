@@ -2,6 +2,7 @@ package uploaders
 
 import (
 	"bytes"
+	"context"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -24,7 +25,7 @@ func NewS3() {
 	s3Client = s3.New(s3Session)
 }
 
-func UploadToS3(path string, body []byte) error {
+func UploadToS3(ctx context.Context, path string, body []byte) error {
 
 	// Upload the image to S3
 	uploadParams := s3.PutObjectInput{
@@ -32,7 +33,7 @@ func UploadToS3(path string, body []byte) error {
 		Key:    aws.String(path),
 		Body:   bytes.NewReader(body),
 	}
-	_, err := s3Client.PutObject(&uploadParams)
+	_, err := s3Client.PutObjectWithContext(ctx, &uploadParams)
 	if err != nil {
 		return err
 	}

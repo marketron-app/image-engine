@@ -87,7 +87,7 @@ func GetImage(ctx *fiber.Ctx) error {
 	addMetricHeader(ctx, transformerTimeMetricHeaderName, fmt.Sprintf("%d", transformerTime))
 
 	start = time.Now()
-	err = uploaders.UploadToS3(fileName+".png", finalImage)
+	err = uploaders.UploadToS3(ctx.Context(), fileName+".png", finalImage)
 	if err != nil {
 		log.Error("Error uploading to S3: " + err.Error())
 	}
