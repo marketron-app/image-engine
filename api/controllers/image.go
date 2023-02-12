@@ -64,7 +64,7 @@ func GetImage(ctx *fiber.Ctx) error {
 		contextTimeoutSeconds = defaultCrawlerTimeout
 	}
 
-	timeoutCtx, cancel := context.WithTimeout(context.Background(), time.Duration(contextTimeoutSeconds)*time.Second)
+	timeoutCtx, cancel := context.WithTimeout(ctx.Context(), time.Duration(contextTimeoutSeconds)*time.Second)
 	defer cancel()
 
 	err, screenshotImage := seleniumCrawler.GetScreenshot(timeoutCtx)

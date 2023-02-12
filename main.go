@@ -8,6 +8,7 @@ import (
 	"log"
 	"marketron-image-engine/api/controllers"
 	"marketron-image-engine/env"
+	"marketron-image-engine/uploaders"
 	"os"
 	"os/signal"
 )
@@ -21,6 +22,7 @@ func init() {
 }
 
 func main() {
+	uploaders.NewS3()
 	app := fiber.New(fiber.Config{AppName: "Marketron Image Engine"})
 	app.Use(recover.New())
 
