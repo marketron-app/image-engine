@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/pprof"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"log"
 	"marketron-image-engine/api/controllers"
 	"marketron-image-engine/env"
+	"marketron-image-engine/uploaders"
 	"os"
 	"os/signal"
 )
@@ -18,11 +20,13 @@ const (
 
 func init() {
 	env.InitializeDotEnv()
+	uploaders.NewS3()
 }
 
 func main() {
 	app := fiber.New(fiber.Config{AppName: "Marketron Image Engine"})
 	app.Use(recover.New())
+	app.Use(pprof.New())
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)

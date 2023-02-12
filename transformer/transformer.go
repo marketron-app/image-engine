@@ -24,12 +24,14 @@ func (t *Transformer) Create() (error, []byte) {
 		fmt.Printf("Failed to decode screenshot image")
 		return err, nil
 	}
+	defer screenshot.Close()
 
 	template, err := gocv.IMDecode(t.TemplateImage, gocv.IMReadUnchanged)
 	if screenshot.Empty() || err != nil {
 		fmt.Printf("Failed to decode template image")
 		return err, nil
 	}
+	defer template.Close()
 
 	// 0 ... height
 	// 1 ... width
@@ -44,6 +46,7 @@ func (t *Transformer) Create() (error, []byte) {
 	}
 
 	origImg := gocv.NewPointVectorFromPoints(points)
+	defer origImg.Close()
 
 	points = []image.Point{
 		{t.MappedCoordinates[0].X, t.MappedCoordinates[0].Y},
@@ -52,10 +55,14 @@ func (t *Transformer) Create() (error, []byte) {
 		{t.MappedCoordinates[3].X, t.MappedCoordinates[3].Y},
 	}
 	newImg := gocv.NewPointVectorFromPoints(points)
+	defer newImg.Close()
 
 	transform := gocv.GetPerspectiveTransform(origImg, newImg)
+	defer transform.Close()
 
 	perspective := gocv.NewMat()
+	defer perspective.Close()
+
 	height := templateSize[0]
 	width := templateSize[1]
 	gocv.WarpPerspective(screenshot, &perspective, transform, image.Point{X: width, Y: height})
@@ -68,6 +75,7 @@ func (t *Transformer) Create() (error, []byte) {
 	draw.Draw(rgba, templateImage.Bounds(), templateImage, image.Point{}, draw.Over)
 
 	buf := new(bytes.Buffer)
+	defer buf.Reset()
 	err = png.Encode(buf, rgba)
 	if err != nil {
 		return err, nil

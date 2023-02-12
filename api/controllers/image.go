@@ -64,7 +64,7 @@ func GetImage(ctx *fiber.Ctx) error {
 		contextTimeoutSeconds = defaultCrawlerTimeout
 	}
 
-	timeoutCtx, cancel := context.WithTimeout(context.Background(), time.Duration(contextTimeoutSeconds)*time.Second)
+	timeoutCtx, cancel := context.WithTimeout(ctx.Context(), time.Duration(contextTimeoutSeconds)*time.Second)
 	defer cancel()
 
 	err, screenshotImage := seleniumCrawler.GetScreenshot(timeoutCtx)
@@ -87,7 +87,7 @@ func GetImage(ctx *fiber.Ctx) error {
 	addMetricHeader(ctx, transformerTimeMetricHeaderName, fmt.Sprintf("%d", transformerTime))
 
 	start = time.Now()
-	err = uploaders.UploadToS3(fileName+".png", finalImage)
+	err = uploaders.UploadToS3(ctx.Context(), fileName+".png", finalImage)
 	if err != nil {
 		log.Error("Error uploading to S3: " + err.Error())
 	}
