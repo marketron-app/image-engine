@@ -27,7 +27,7 @@ func (t *Transformer) Create() (error, []byte) {
 	defer screenshot.Close()
 
 	template, err := gocv.IMDecode(t.TemplateImage, gocv.IMReadUnchanged)
-	if screenshot.Empty() || err != nil {
+	if template.Empty() || err != nil {
 		fmt.Printf("Failed to decode template image")
 		return err, nil
 	}
