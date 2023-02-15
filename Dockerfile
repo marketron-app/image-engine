@@ -2,7 +2,7 @@ FROM alpine as chromedriver
 RUN wget https://chromedriver.storage.googleapis.com/108.0.5359.71/chromedriver_linux64.zip
 RUN unzip chromedriver_linux64.zip
 
-FROM golang:1.18 as step1
+FROM golang:1.19 as step1
 WORKDIR /usr/app
 
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
