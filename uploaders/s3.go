@@ -20,6 +20,7 @@ func NewS3() {
 	s3Config = aws.Config{
 		Region:      aws.String(os.Getenv("AWS_REGION")),
 		Credentials: credentials.NewEnvCredentials(),
+		Endpoint:    aws.String(os.Getenv("AWS_ENDPOINT")),
 	}
 	s3Session, _ = session.NewSession(&s3Config)
 	s3Client = s3.New(s3Session)
